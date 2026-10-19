@@ -1,0 +1,11 @@
+# Merge this service into your existing docker-compose.yml.
+# Assumes the FastAPI service is named "api" and shares this Compose network.
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
