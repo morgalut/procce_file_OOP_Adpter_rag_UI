@@ -11,9 +11,16 @@ export async function apiRequest(path, options = {}) {
 }
 export const api = {
   health: () => apiRequest('/health'),
+  runs: ({documentId='',limit=25}={}) => apiRequest(`${API_ROOT}/runs?limit=${limit}${documentId ? `&document_id=${encodeURIComponent(documentId)}` : ''}`),
+  run: runId => apiRequest(`${API_ROOT}/runs/${encodeURIComponent(runId)}`),
+  runStages: runId => apiRequest(`${API_ROOT}/runs/${encodeURIComponent(runId)}/stages`),
+  runEvents: (runId, {limit=100, afterId=0}={}) => apiRequest(`${API_ROOT}/runs/${encodeURIComponent(runId)}/events?limit=${limit}&after_id=${afterId}`),
   schema: () => apiRequest('/openapi.json'),
   upload: file => { const body = new FormData(); body.append('file', file, file.name); return apiRequest(`${API_ROOT}/documents`, { method: 'POST', body }); },
   document: id => apiRequest(`${API_ROOT}/documents/${encodeURIComponent(id)}`),
+  createDocumentReview: id => apiRequest(`${API_ROOT}/documents/${encodeURIComponent(id)}/review`, { method: 'POST' }),
+  documentReview: reviewId => apiRequest(`${API_ROOT}/documents/reviews/${encodeURIComponent(reviewId)}`),
+  decideDocumentReview: (reviewId, proposalIndex, payload) => apiRequest(`${API_ROOT}/documents/reviews/${encodeURIComponent(reviewId)}/proposals/${proposalIndex}/decision`, { method: 'POST', body: JSON.stringify(payload) }),
   validation: id => apiRequest(`${API_ROOT}/documents/${encodeURIComponent(id)}/validation`),
   vectors: id => apiRequest(`${API_ROOT}/documents/${encodeURIComponent(id)}/prepare-vectors`, { method: 'POST' }),
   search: data => apiRequest(`${API_ROOT}/search`, { method: 'POST', body: JSON.stringify(data) }),
